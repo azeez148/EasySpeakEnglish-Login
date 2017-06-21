@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.app.easyspeak.model.User;
 import com.app.easyspeak.serviceImpl.UserLoginServiceImpl;
@@ -53,6 +54,7 @@ public class ProfileFragment extends Fragment {
     private EditText mPassword;
     private EditText mEmail;
     Context context = null;
+    SweetAlertDialog pDialog =null;
 
     @Inject
     private UserProfileServiceImpl userProfileService;
@@ -244,6 +246,11 @@ public class ProfileFragment extends Fragment {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             //showProgress(true);
+            pDialog = new SweetAlertDialog(context, SweetAlertDialog.PROGRESS_TYPE);
+            pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+            pDialog.setTitleText("Updating..");
+            pDialog.setCancelable(false);
+            pDialog.show();
             User user = new User(userId, email, password, email, firstName,secondName,dateOfBirth,mobileNum);
 
             mAuthTask = new ProfileFragment.UserUpdateTask(user);
@@ -302,20 +309,16 @@ User user=null;
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
             //showProgress(false);
-
+            pDialog.hide();
             if (success) {
-                new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE)
-                        .setTitleText("Good job!")
-                        .setContentText("You clicked the button!")
-                        .show();
+                String updateSuccessToastMessage = "Profile Updated Successfully";
+                Toast.makeText(context, updateSuccessToastMessage, Toast.LENGTH_SHORT).show();
 
                 Log.v("onPostExecute ","success");
 //                finish();
             } else {
-                new SweetAlertDialog(context, SweetAlertDialog.ERROR_TYPE)
-                        .setTitleText("Oops...")
-                        .setContentText("Something went wrong!")
-                        .show();
+                String updateErrorToastMessage = "Oops.. Something went wrong";
+                Toast.makeText(context, updateErrorToastMessage, Toast.LENGTH_SHORT).show();
                 Log.v("onPostExecute ","failed");
 //                mPasswordView.setError(getString(R.string.error_incorrect_password));
 //                mPasswordView.requestFocus();

@@ -2,6 +2,7 @@ package com.app.easyspeak.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -20,6 +21,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.app.easyspeak.model.User;
 import com.app.easyspeak.service.UserHomeService;
@@ -30,6 +32,8 @@ import com.app.easyspeak.splash.SplashScreen;
 
 import javax.inject.Inject;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
+
 public class UserHomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ProfileFragment.OnFragmentInteractionListener,
         SpeechToTextFragment.OnFragmentInteractionListener,AboutFragment.OnFragmentInteractionListener,TextToSpeechFragment.OnFragmentInteractionListener,
@@ -37,6 +41,7 @@ public class UserHomeActivity extends AppCompatActivity
 
     User user=null;
     Context context = null;
+//    SweetAlertDialog pDialog =null;
 
     @Inject
     private UserHomeService userService;
@@ -51,7 +56,7 @@ public class UserHomeActivity extends AppCompatActivity
         setContentView(R.layout.activity_user_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        context = this.getApplicationContext();
+        context = getApplicationContext();
         Intent i = getIntent();
         user = (User)i.getSerializableExtra("user");
         Log.v("user in home activity",user.toString());
@@ -136,13 +141,24 @@ public class UserHomeActivity extends AppCompatActivity
         int id = item.getItemId();
 
           if (id == R.id.nav_logout) {
+//              pDialog = new SweetAlertDialog(context, SweetAlertDialog.PROGRESS_TYPE);
+//              pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+//              pDialog.setTitleText("Updating..");
+//              pDialog.setCancelable(false);
+//              pDialog.show();
             boolean isUpdated = userService.logoutUser(user,context);
+
             if(isUpdated){
+//                pDialog.hide();
+                String logoutSuccessToastMessage = "Logged out Succesfully";
+                Toast.makeText(context, logoutSuccessToastMessage, Toast.LENGTH_SHORT).show();
                 Intent i = new Intent(UserHomeActivity.this, LoginUserActivity.class);
                 startActivity(i);
                 finish();
                 return true;
             }else{
+                String logoutErrorToastMessage = "Oops.. Something went wrong";
+                Toast.makeText(context, logoutErrorToastMessage, Toast.LENGTH_SHORT).show();
                 return false;
             }
 

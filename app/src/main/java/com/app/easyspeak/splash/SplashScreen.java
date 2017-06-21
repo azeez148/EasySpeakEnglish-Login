@@ -7,18 +7,24 @@ package com.app.easyspeak.splash;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.widget.Toast;
 
 import com.app.easyspeak.activity.LoginUserActivity;
 import com.app.easyspeak.activity.R;
 import com.app.easyspeak.activity.UserHomeActivity;
+import com.app.easyspeak.activity.WelcomeActivity;
 import com.app.easyspeak.model.User;
 import com.app.easyspeak.model.UserSession;
 import com.app.easyspeak.serviceImpl.SplashServiceImpl;
 import com.app.easyspeak.serviceImpl.UserLoginServiceImpl;
+import com.app.easyspeak.utils.PrefManager;
 
 import javax.inject.Inject;
+
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class SplashScreen extends Activity {
     User user = null;
@@ -34,7 +40,6 @@ public class SplashScreen extends Activity {
         splashService = new SplashServiceImpl();
         userLoginService = new UserLoginServiceImpl();
     }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -50,21 +55,42 @@ public class SplashScreen extends Activity {
 
             @Override
             public void run() {
+
+//                SweetAlertDialog pDialog = new SweetAlertDialog(context, SweetAlertDialog.PROGRESS_TYPE);
+//                pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+//                pDialog.setTitleText("Please Wait..");
+//                pDialog.setCancelable(false);
+//                pDialog.show();
+
                 // This method will be executed once the timer is over
                 // Start your app main activity
 
-                UserSession userSession =splashService.getUserSession(context);
-                user = new User(userSession.getUserName());
-                if( userSession != null && userSession.getIsActive() == 1){
-                    user = splashService.getUserByUserName(user,context);
-                    Intent i = new Intent(SplashScreen.this, UserHomeActivity.class);
-                    i.putExtra("user",user);
-                    startActivity(i);
-                } else {
-                    Intent i = new Intent(SplashScreen.this, LoginUserActivity.class);
-                    startActivity(i);
-                }
+//                String spalshToastMessageFirst = "Hello There!!";
+//                Toast.makeText(context, spalshToastMessageFirst, Toast.LENGTH_SHORT).show();
+//
+//
+//
+//                UserSession userSession =splashService.getUserSession(context);
+//
+//                String spalshToastMessageSecond = "Welcome to EasyEnglishSpeak!!";
+//                Toast.makeText(context, spalshToastMessageSecond, Toast.LENGTH_SHORT).show();
+//
+//                if( userSession != null && userSession.getIsActive() == 1){
+//                    user = new User(userSession.getUserName());
+//                    user = splashService.getUserByUserName(user,context);
+//                    Intent i = new Intent(SplashScreen.this, UserHomeActivity.class);
+//                    i.putExtra("user",user);
+//                    startActivity(i);
+//                } else {
+//                    Intent i = new Intent(SplashScreen.this, LoginUserActivity.class);
+//                    startActivity(i);
+//                }
                 // close this activity
+
+
+
+                Intent i = new Intent(SplashScreen.this, WelcomeActivity.class);
+                startActivity(i);
                 finish();
             }
         }, SPLASH_TIME_OUT);

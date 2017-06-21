@@ -156,7 +156,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7));
         }else{
             System.out.print("elseeeee");
-            user.setId("0");
+            UserSession userSession = getUserSession();
+            if(null != userSession){
+                user.setId("!");
+            }else{
+                user.setId("0");
+            }
+
         }
         // return user
         return user;

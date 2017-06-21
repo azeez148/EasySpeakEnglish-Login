@@ -30,6 +30,8 @@ public class UserLoginServiceImpl implements UserLoginService {
                 user = db.getContact(id);
                 db.addUserSession(user);
                 Log.v("user  created  ",user.toString());
+            }else{
+
             }
         }catch (SQLException e){
             Log.v("while creating user ",e.getStackTrace().toString());

@@ -4,11 +4,13 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -28,6 +30,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.app.easyspeak.model.User;
 import com.app.easyspeak.service.UserLoginService;
@@ -38,6 +41,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -62,13 +67,13 @@ public class LoginUserActivity extends AppCompatActivity implements LoaderCallba
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private UserLoginTask mAuthTask = null;
-
+    Context context = null;
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
-
+    SweetAlertDialog pDialog =null;
     @Inject
     private UserLoginServiceImpl userLoginService;
     public LoginUserActivity() {
@@ -79,6 +84,10 @@ public class LoginUserActivity extends AppCompatActivity implements LoaderCallba
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_user);
+        context =  getApplicationContext();
+        String loginToastMessage = "Login with your credentials.Otherwise New User Will be created !!";
+        Toast.makeText(this, loginToastMessage, Toast.LENGTH_SHORT).show();
+
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
@@ -197,7 +206,14 @@ public class LoginUserActivity extends AppCompatActivity implements LoaderCallba
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            showProgress(true);
+//            showProgress(true);
+
+            pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+            pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+            pDialog.setTitleText("Logging In..");
+            pDialog.setCancelable(false);
+            pDialog.show();
+
             mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);
         }
@@ -326,33 +342,41 @@ public class LoginUserActivity extends AppCompatActivity implements LoaderCallba
                 Thread.sleep(2000);
                 user = new User(mEmail,mPassword);
                 Log.v("user reutrning ",user.toString());
-                user = userLoginService.authenticateUser(user,getApplicationContext());
+                user = userLoginService.authenticateUser(user,context);
 
 
             } catch (InterruptedException e) {
                 return false;
             }
-
             Log.v("user for home activity",user.toString());
-            Intent i = new Intent(LoginUserActivity.this, UserHomeActivity.class);
-            i.putExtra("user",user);
-            startActivity(i);
-            // TODO: register the new account here.
-            return true;
+            if(user.getId() != "!"){
+                Intent i = new Intent(LoginUserActivity.this, UserHomeActivity.class);
+                i.putExtra("user",user);
+                startActivity(i);
+                // TODO: register the new account here.
+                return true;
+            }else{
+            return false;
+            }
+
         }
 
         @Override
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
-            showProgress(false);
-
+//            showProgress(false);
+            pDialog.hide();
             if (success) {
+                String loginSuccessToastMessage = "Logged in Succesfully";
+                Toast.makeText(context, loginSuccessToastMessage, Toast.LENGTH_SHORT).show();
                 Log.v("onPostExecute ","success");
                 finish();
             } else {
+                String loginErrorToastMessage = "Oops.. Something went wrong";
+                Toast.makeText(context, loginErrorToastMessage, Toast.LENGTH_SHORT).show();
                 Log.v("onPostExecute ","failed");
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
+                mEmailView.setError(getString(R.string.error_invalid_credentials));
+                mEmailView.requestFocus();
             }
         }
 
