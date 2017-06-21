@@ -45,8 +45,8 @@ public class ProfileFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
-    User user = null;
 
+    User user = null;
     private EditText fName;
     private EditText sName;
     private EditText phoneNum;
