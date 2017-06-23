@@ -12,9 +12,9 @@
         android:orientation="vertical">
 
         <ImageView
-            android:layout_width="@dimen/img_width_height"
+            android:layout_width="@dimen/img_width_width"
             android:layout_height="@dimen/img_width_height"
-            android:src="@drawable/ic_account" />
+            android:src="@drawable/stt_logo" />
 
         <TextView
             android:layout_width="wrap_content"

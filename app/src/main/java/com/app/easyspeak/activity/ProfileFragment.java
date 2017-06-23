@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.app.easyspeak.model.User;
@@ -55,6 +57,7 @@ public class ProfileFragment extends Fragment {
     private EditText mEmail;
     Context context = null;
     SweetAlertDialog pDialog =null;
+    TextView userName = null;
 
     @Inject
     private UserProfileServiceImpl userProfileService;
@@ -99,7 +102,11 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
        View rootView =  inflater.inflate(R.layout.fragment_profile, container, false);
+
+
+
         Bundle bundle = this.getArguments();
+
         user = (User)bundle.getSerializable("user");
         Log.v("user in profile ", user.toString());
 
@@ -174,6 +181,12 @@ public class ProfileFragment extends Fragment {
      * errors are presented and no actual login attempt is made.
      */
     private void attemptUpdate() {
+        pDialog = new SweetAlertDialog(context, SweetAlertDialog.PROGRESS_TYPE);
+        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        pDialog.setTitleText("Updating..");
+        pDialog.setCancelable(false);
+        pDialog.show();
+
         if (mAuthTask != null) {
             return;
         }
@@ -242,15 +255,13 @@ public class ProfileFragment extends Fragment {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
             focusView.requestFocus();
+            pDialog.hide();
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             //showProgress(true);
-            pDialog = new SweetAlertDialog(context, SweetAlertDialog.PROGRESS_TYPE);
-            pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
-            pDialog.setTitleText("Updating..");
-            pDialog.setCancelable(false);
-            pDialog.show();
+
+
             User user = new User(userId, email, password, email, firstName,secondName,dateOfBirth,mobileNum);
 
             mAuthTask = new ProfileFragment.UserUpdateTask(user);
@@ -313,7 +324,7 @@ User user=null;
             if (success) {
                 String updateSuccessToastMessage = "Profile Updated Successfully";
                 Toast.makeText(context, updateSuccessToastMessage, Toast.LENGTH_SHORT).show();
-
+//                userName.setText(user.getFirstName() +" "+ user.getSecondName());
                 Log.v("onPostExecute ","success");
 //                finish();
             } else {

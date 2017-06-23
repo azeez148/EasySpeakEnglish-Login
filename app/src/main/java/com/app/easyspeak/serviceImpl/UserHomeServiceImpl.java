@@ -16,20 +16,20 @@ public class UserHomeServiceImpl implements UserHomeService {
     DatabaseHandler db =null;
 
     @Override
-    public boolean logoutUser(User user, Context context) {
-        boolean isUpdated =false;
+    public User getUserByUserName(User user, Context context) {
         try {
             db = new DatabaseHandler(context);
-            isUpdated = db.logoutUser(user);
+            Log.v("userName  is ",user.toString());
+            user = db.getContactByUserName(user);
 
         }catch (SQLException e){
-            Log.v("logoutUser ",e.getStackTrace().toString());
-            return isUpdated;
+            Log.v("getUserByUserName ",e.getStackTrace().toString());
 
         }finally {
             db.close();
         }
-        Log.v("isUpdated ",String.valueOf(isUpdated));
-        return isUpdated;
+        Log.v("user reutrning   ",user.toString());
+        return user;
     }
+
 }

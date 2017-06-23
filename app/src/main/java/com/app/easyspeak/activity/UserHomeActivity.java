@@ -29,6 +29,7 @@ import com.app.easyspeak.serviceImpl.SplashServiceImpl;
 import com.app.easyspeak.serviceImpl.UserHomeServiceImpl;
 import com.app.easyspeak.serviceImpl.UserLoginServiceImpl;
 import com.app.easyspeak.splash.SplashScreen;
+import com.app.easyspeak.utils.PrefManager;
 
 import javax.inject.Inject;
 
@@ -37,10 +38,13 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 public class UserHomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ProfileFragment.OnFragmentInteractionListener,
         SpeechToTextFragment.OnFragmentInteractionListener,AboutFragment.OnFragmentInteractionListener,TextToSpeechFragment.OnFragmentInteractionListener,
-        SettingsFragment.OnFragmentInteractionListener{
+        SettingsFragment.OnFragmentInteractionListener, HomeFragment.OnFragmentInteractionListener{
 
     User user=null;
     Context context = null;
+    private PrefManager prefManager;
+    NavigationView navigationView = null;
+
 //    SweetAlertDialog pDialog =null;
 
     @Inject
@@ -60,7 +64,7 @@ public class UserHomeActivity extends AppCompatActivity
         Intent i = getIntent();
         user = (User)i.getSerializableExtra("user");
         Log.v("user in home activity",user.toString());
-
+        prefManager = new PrefManager(this);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,32 +76,38 @@ public class UserHomeActivity extends AppCompatActivity
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close){
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+//                setHeaderUserName();
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                setHeaderUserName();
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+        };
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
         drawer.openDrawer(GravityCompat.START);
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
 
-        View header=navigationView.getHeaderView(0);
-/*View view=navigationView.inflateHeaderView(R.layout.nav_header_main);*/
-        TextView userName = (TextView)header.findViewById(R.id.userName);
-        TextView userEmail = (TextView)header.findViewById(R.id.userEmail);
-        if(user.getFirstName()!= null && !user.getFirstName().equals(null)){
-            userName.setText(user.getFirstName() +" "+ user.getSecondName());
-        }else{
-            userName.setText("Complete Your Profile");
-        }
+        setHeaderUserName();
 
-        userEmail.setText(user.getEmail());
+
 
         navigationView.getMenu().getItem(0).setChecked(true);
-
         //add this line to display menu1 when the activity is loaded
-       displaySelectedScreen(R.id.nav_profile);
+        displaySelectedScreen(R.id.nav_home);
     }
 
     @Override
@@ -125,9 +135,9 @@ public class UserHomeActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_about) {
-            return true;
-        }
+//        if (id == R.id.action_about) {
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -141,27 +151,20 @@ public class UserHomeActivity extends AppCompatActivity
         int id = item.getItemId();
 
           if (id == R.id.nav_logout) {
-//              pDialog = new SweetAlertDialog(context, SweetAlertDialog.PROGRESS_TYPE);
-//              pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
-//              pDialog.setTitleText("Updating..");
-//              pDialog.setCancelable(false);
-//              pDialog.show();
-            boolean isUpdated = userService.logoutUser(user,context);
-
-            if(isUpdated){
-//                pDialog.hide();
+              try{
+                  prefManager.setUserIsActive(false);
+                  prefManager.setFirstTimeLaunch(false);
+              }catch(Exception e){
+                  String logoutErrorToastMessage = "Oops.. Something went wrong";
+                  Toast.makeText(context, logoutErrorToastMessage, Toast.LENGTH_SHORT).show();
+                  return false;
+              }
                 String logoutSuccessToastMessage = "Logged out Succesfully";
                 Toast.makeText(context, logoutSuccessToastMessage, Toast.LENGTH_SHORT).show();
                 Intent i = new Intent(UserHomeActivity.this, LoginUserActivity.class);
                 startActivity(i);
                 finish();
                 return true;
-            }else{
-                String logoutErrorToastMessage = "Oops.. Something went wrong";
-                Toast.makeText(context, logoutErrorToastMessage, Toast.LENGTH_SHORT).show();
-                return false;
-            }
-
         }
         else{
               displaySelectedScreen(item.getItemId());
@@ -173,10 +176,13 @@ public class UserHomeActivity extends AppCompatActivity
     }
 
     private void displaySelectedScreen(int id) {
-
+//        setHeaderUserName();
         Fragment fragment = null;
         Class fragmentClass = null;
 
+        if (id == R.id.nav_home) {
+            fragmentClass = HomeFragment.class;
+        }
         if (id == R.id.nav_profile) {
             fragmentClass = ProfileFragment.class;
         } else if (id == R.id.nav_record) {
@@ -203,5 +209,18 @@ public class UserHomeActivity extends AppCompatActivity
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+    public void setHeaderUserName(){
+
+        View header=navigationView.getHeaderView(0);
+        TextView userName = (TextView)header.findViewById(R.id.userName);
+        TextView userEmail = (TextView)header.findViewById(R.id.userEmail);
+        user = userService.getUserByUserName(user,context);
+        if(user.getFirstName()!= null){
+            userName.setText(user.getFirstName() +" "+ user.getSecondName());
+        }else{
+            userName.setText("Complete Your Profile");
+        }
+        userEmail.setText(user.getEmail());
     }
 }

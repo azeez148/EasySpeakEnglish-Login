@@ -2,6 +2,7 @@ package com.app.easyspeak.serviceImpl;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.database.SQLException;
 import android.util.Log;
 
@@ -16,26 +17,24 @@ import com.app.easyspeak.service.UserLoginService;
 
 public class UserLoginServiceImpl implements UserLoginService {
     DatabaseHandler db =null;
+    long id = 0;
     @Override
     public User authenticateUser(User user, Context context) {
         try {
             db = new DatabaseHandler(context);
-
-            Log.v("user  is ",user.toString());
             user = db.getContactByUserName(user);
-
-            if (user.getId().equals("0")) {
-                Log.v("user not already in ",user.toString());
-                long id = db.addUserFromLogin(user);
-                user = db.getContact(id);
-                db.addUserSession(user);
-                Log.v("user  created  ",user.toString());
+            Log.v("user  is ",user.toString());
+            if(user.getId().equals("0")){
+                 id = db.addUserFromLogin(user);
             }else{
-
+                id = Long.valueOf(user.getId());
             }
+            user = db.getContact(id);
+            Log.v("user  created  ",user.toString());
+
         }catch (SQLException e){
             Log.v("while creating user ",e.getStackTrace().toString());
-
+            return null;
         }finally {
             db.close();
         }

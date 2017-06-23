@@ -9,5 +9,6 @@ import com.app.easyspeak.model.User;
  */
 
 public interface UserHomeService {
-    public boolean logoutUser(User user, Context context);
+    public User getUserByUserName(User user, Context context);
+
 }

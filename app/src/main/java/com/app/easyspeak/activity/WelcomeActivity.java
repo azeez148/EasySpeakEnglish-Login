@@ -17,13 +17,10 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.app.easyspeak.model.User;
-import com.app.easyspeak.model.UserSession;
 import com.app.easyspeak.serviceImpl.SplashServiceImpl;
 import com.app.easyspeak.serviceImpl.UserLoginServiceImpl;
-import com.app.easyspeak.splash.SplashScreen;
 import com.app.easyspeak.utils.PrefManager;
 
 import javax.inject.Inject;
@@ -55,6 +52,7 @@ public class WelcomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getApplicationContext();
+        getSupportActionBar().hide();
         // Checking for first time launch - before calling setContentView()
         prefManager = new PrefManager(this);
         if (!prefManager.isFirstTimeLaunch()) {
@@ -142,14 +140,9 @@ public class WelcomeActivity extends AppCompatActivity {
     private void launchHomeScreen() {
         prefManager.setFirstTimeLaunch(false);
 
-
-        UserSession userSession =splashService.getUserSession(context);
-
-//        String spalshToastMessageSecond = "Welcome to EasyEnglishSpeak!!";
-//        Toast.makeText(context, spalshToastMessageSecond, Toast.LENGTH_SHORT).show();
-
-        if( userSession != null && userSession.getIsActive() == 1){
-            user = new User(userSession.getUserName());
+        if(prefManager.getUserIsActive()){
+            String userName = prefManager.getSessionUsername();
+            user = new User(userName);
             user = splashService.getUserByUserName(user,context);
             Intent i = new Intent(WelcomeActivity.this, UserHomeActivity.class);
             i.putExtra("user",user);

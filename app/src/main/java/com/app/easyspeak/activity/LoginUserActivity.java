@@ -36,6 +36,7 @@ import com.app.easyspeak.model.User;
 import com.app.easyspeak.service.UserLoginService;
 import com.app.easyspeak.serviceImpl.UserLoginServiceImpl;
 import com.app.easyspeak.splash.SplashScreen;
+import com.app.easyspeak.utils.PrefManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,13 +81,17 @@ public class LoginUserActivity extends AppCompatActivity implements LoaderCallba
        super();
         userLoginService = new UserLoginServiceImpl();
     }
+    private PrefManager prefManager;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_user);
         context =  getApplicationContext();
-        String loginToastMessage = "Login with your credentials.Otherwise New User Will be created !!";
+        String loginToastMessage = "Login with your credentials.!!";
         Toast.makeText(this, loginToastMessage, Toast.LENGTH_SHORT).show();
+        prefManager = new PrefManager(this);
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -166,6 +171,13 @@ public class LoginUserActivity extends AppCompatActivity implements LoaderCallba
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
+
+        pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        pDialog.setTitleText("Logging In..");
+        pDialog.setCancelable(false);
+        pDialog.show();
+
         if (mAuthTask != null) {
             return;
         }
@@ -203,16 +215,11 @@ public class LoginUserActivity extends AppCompatActivity implements LoaderCallba
             // There was an error; don't attempt login and focus the first
             // form field with an error.
             focusView.requestFocus();
+            pDialog.hide();
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
 //            showProgress(true);
-
-            pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
-            pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
-            pDialog.setTitleText("Logging In..");
-            pDialog.setCancelable(false);
-            pDialog.show();
 
             mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);
@@ -338,18 +345,19 @@ public class LoginUserActivity extends AppCompatActivity implements LoaderCallba
             // TODO: attempt authentication against a network service.
             User user=null;
             try {
-                // Simulate network access.
                 Thread.sleep(2000);
                 user = new User(mEmail,mPassword);
                 Log.v("user reutrning ",user.toString());
                 user = userLoginService.authenticateUser(user,context);
-
-
+                prefManager.setFirstTimeLaunch(false);
+                prefManager.setSessionUsername(user.getUserName());
+                prefManager.setUserIsActive(true);
             } catch (InterruptedException e) {
+                prefManager.setFirstTimeLaunch(true);
                 return false;
             }
             Log.v("user for home activity",user.toString());
-            if(user.getId() != "!"){
+            if(!user.equals(null)){
                 Intent i = new Intent(LoginUserActivity.this, UserHomeActivity.class);
                 i.putExtra("user",user);
                 startActivity(i);
@@ -358,7 +366,6 @@ public class LoginUserActivity extends AppCompatActivity implements LoaderCallba
             }else{
             return false;
             }
-
         }
 
         @Override

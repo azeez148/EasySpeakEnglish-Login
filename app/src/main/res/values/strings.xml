@@ -29,11 +29,12 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
-    <string name="title_activity_user_home">UserHomeActivity</string>
+    <string name="title_activity_user_home">User Home</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
+    <string name="action_home">Home</string>
     <string name="action_record">Speech to Text</string>
     <string name="action_profile">Profile</string>
     <string name="action_text">Text to Speech</string>
@@ -59,7 +60,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="profile_fragment">Hello profile fragment</string>
-    <string name="speech_to_text_fragment">Hello Specch To Text fragment</string>
+    <string name="speech_to_text_fragment">Hello Speech To Text fragment</string>
     <string name="text_to_speech_fragment">Hello Text To Specch fragment</string>
 
 
@@ -68,19 +69,22 @@
     <string name="skip">SKIP</string>
     <string name="start">GOT IT</string>
 
-    <string name="slide_1_title">Hello Food!</string>
-    <string name="slide_1_desc">The easiest way to order food from your favourite restaurant!</string>
+    <string name="slide_1_title">Hello There!!</string>
+    <string name="slide_1_desc">Welcome to EasyEnglishSpeak!!</string>
 
-    <string name="slide_2_title">Movie Tickets</string>
-    <string name="slide_2_desc">Book movie tickets for your family and friends!</string>
+    <string name="slide_2_title">Text To Specch</string>
+    <string name="slide_2_desc">Convert any English text into an audio file.!!</string>
 
-    <string name="slide_3_title">Great Discounts</string>
-    <string name="slide_3_desc">Best discounts on every single service we offer!</string>
+    <string name="slide_3_title">Speech To Text</string>
+    <string name="slide_3_desc">Converts the human voice into the written word.!!</string>
 
-    <string name="slide_4_title">World Travel</string>
-    <string name="slide_4_desc">Book tickets of any transportation and travel the world!</string>
+    <string name="slide_4_title">Keep Scrolling</string>
+    <string name="slide_4_desc">Something Bigger is on the way.. Keep Supporting us..!!</string>
 
     <string name="play_again_desc">To see the welcome slider again, goto Settings -> apps -> welcome slider -> clear data</string>
     <string name="play_again">Play Again</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

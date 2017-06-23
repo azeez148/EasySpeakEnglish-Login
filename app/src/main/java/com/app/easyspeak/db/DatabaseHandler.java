@@ -9,7 +9,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.app.easyspeak.model.User;
-import com.app.easyspeak.model.UserSession;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
@@ -156,65 +155,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7));
         }else{
             System.out.print("elseeeee");
-            UserSession userSession = getUserSession();
-            if(null != userSession){
-                user.setId("!");
-            }else{
                 user.setId("0");
-            }
-
         }
-        // return user
         return user;
     }
 
-    public UserSession getUserSession() {
-        Log.v("getUserSession ","");
-        UserSession session = null;
-        try {
-            SQLiteDatabase db = this.getReadableDatabase();
-            //String query = "SELECT column1,column2,column3 FROM table "
-            final StringBuilder query = new StringBuilder("SELECT ");
-            query.append(SESSION_KEY_ID).append(", ").append(SESSION_USER_ID).append(", ").append(SESSION_USER_NAME).append(", ").append(SESSION_IS_ACTIVE).append(" FROM ")
-                    .append(TABLE_SESSION);
-
-            Log.v("user  is ", query.toString());
-
-            Cursor cursor = db.rawQuery(query.toString(), null);
-
-            if (cursor != null)
-                cursor.moveToFirst();
-
-            if (cursor.getCount() != 0 ){
-                session = new UserSession(cursor.getString(0), cursor.getString(1), cursor.getString(2), Integer.parseInt(cursor.getString(3)));
-                Log.v("session  is ", session.toString());
-            }
-        }catch(SQLException e){
-            Log.v("getUserSession exec", e.toString());
-            }
-
-        // return user
-        return session;
-    }
-
-    public boolean logoutUser(User user) {
-        try{
-            SQLiteDatabase db = this.getReadableDatabase();
-            ContentValues cv = new ContentValues();
-            cv.put(SESSION_IS_ACTIVE,0); //These Fields should be your String values of actual column names
-
-            String where = "id=?";
-            String[] whereArgs = new String[] {String.valueOf(user.getId())};
-            db.update(TABLE_SESSION, cv, where, whereArgs);
-            UserSession userSession = getUserSession();
-            Log.v("updated ", userSession.toString());
-            return true;
-
-        }catch(SQLException e){
-            Log.v("getUserSession exec", e.toString());
-        }
-        return false;
-    }
 
     public User updateUserProfile(User user) {
 

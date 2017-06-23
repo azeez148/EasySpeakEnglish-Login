@@ -6,7 +6,6 @@ import android.util.Log;
 
 import com.app.easyspeak.db.DatabaseHandler;
 import com.app.easyspeak.model.User;
-import com.app.easyspeak.model.UserSession;
 import com.app.easyspeak.service.SplashService;
 
 /**
@@ -16,21 +15,6 @@ import com.app.easyspeak.service.SplashService;
 public class SplashServiceImpl implements SplashService {
     DatabaseHandler db =null;
 
-    @Override
-    public UserSession getUserSession(Context context) {
-        UserSession userSession =null;
-        try {
-            db = new DatabaseHandler(context);
-            userSession = db.getUserSession();
-        }catch (SQLException e){
-            Log.v("while getUserSession  ",e.getStackTrace().toString());
-
-        }finally {
-            db.close();
-        }
-
-        return userSession;
-    }
     @Override
     public User getUserByUserName(User user, Context context) {
         try {
